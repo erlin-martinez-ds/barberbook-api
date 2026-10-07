@@ -6,7 +6,7 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'BarberBook API funcionando'
+    message: 'BarberBook API funcionando correctamente',
   });
 });
 
