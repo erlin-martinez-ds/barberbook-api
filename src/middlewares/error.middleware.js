@@ -1,5 +1,13 @@
+
 const errorMiddleware = (err, req, res, next) => {
-  const statusCode = err.statusCode || err.status || 500;
+  const requestedStatus = Number(err.statusCode || err.status);
+
+  const statusCode =
+    Number.isInteger(requestedStatus) &&
+    requestedStatus >= 400 &&
+    requestedStatus <= 599
+      ? requestedStatus
+      : 500;
 
   const isProduction = process.env.NODE_ENV === "production";
 
@@ -13,10 +21,9 @@ const errorMiddleware = (err, req, res, next) => {
     message,
   };
 
-  // Los detalles técnicos solo se exponen fuera de producción.
   if (!isProduction) {
     response.details = {
-      name: err.name,
+      name: err.name || "Error",
       stack: err.stack,
     };
   }
