@@ -1,4 +1,3 @@
-
 const express = require("express");
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -12,7 +11,17 @@ app.get("/", (req, res) => {
   });
 });
 
-// El middleware de errores debe ir después de todas las rutas.
+// Ruta temporal para probar el middleware de errores.
+if (process.env.NODE_ENV !== "production") {
+  app.get("/test-error", (req, res, next) => {
+    const error = new Error("Error de prueba del middleware");
+    error.statusCode = 500;
+
+    next(error);
+  });
+}
+
+// Debe ir después de todas las rutas.
 app.use(errorMiddleware);
 
 module.exports = app;
