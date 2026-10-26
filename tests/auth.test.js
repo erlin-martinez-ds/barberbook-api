@@ -4,6 +4,7 @@ const request = require("supertest");
 const bcrypt = require("bcrypt");
 const User = require("../src/models/user.model");
 const app = require("../src/app");
+const jwt = require("jsonwebtoken");
 
 describe("POST /api/auth/register", () => {
   beforeEach(() => {
@@ -107,5 +108,142 @@ describe("POST /api/auth/register", () => {
 
     expect(savedUser.name).toBe("Usuario Prueba");
     expect(savedUser.email).toBe("prueba@example.com");
+  });
+});
+
+describe("POST /api/auth/login", () => {
+  const validUser = {
+    _id: "usuario123",
+    name: "Usuario Prueba",
+    email: "prueba@example.com",
+    password: "$2b$12$hashDePrueba",
+    role: "USER",
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.JWT_SECRET = "clave-de-prueba-segura-para-jwt";
+    User.findOne = jest.fn();
+  });
+
+  test("rechaza solicitudes sin correo o contraseña", async () => {
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send({ email: "prueba@example.com" });
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+  });
+
+  test("responde 401 cuando el usuario no existe", async () => {
+    User.findOne.mockReturnValue({
+      select: jest.fn().mockResolvedValue(null),
+    });
+
+    const response = await request(app).post("/api/auth/login").send({
+      email: "inexistente@example.com",
+      password: "ClaveSegura123!",
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toBe("Credenciales incorrectas");
+  });
+
+  test("rechaza un token ausente en el middleware", () => {
+    const authMiddleware = require("../src/middlewares/auth.middleware");
+    const req = { headers: {} };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const next = jest.fn();
+
+    authMiddleware(req, res, next);
+
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  test("verifica que un JWT válido contenga el usuario y el rol", () => {
+    const authMiddleware = require("../src/middlewares/auth.middleware");
+    const token = jwt.sign({ role: "USER" }, process.env.JWT_SECRET, {
+      subject: "usuario123",
+      expiresIn: "1h",
+    });
+
+    const req = {
+      headers: { authorization: `Bearer ${token}` },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const next = jest.fn();
+
+    authMiddleware(req, res, next);
+
+    expect(req.user).toEqual({
+      id: "usuario123",
+      role: "USER",
+    });
+    expect(next).toHaveBeenCalled();
+  });
+
+  test("inicia sesión con credenciales correctas y devuelve un JWT", async () => {
+    const password = "ClaveSegura123!";
+
+    User.findOne.mockReturnValue({
+      select: jest.fn().mockResolvedValue({
+        ...validUser,
+        password: "hash-de-prueba",
+      }),
+    });
+
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(true);
+
+    const response = await request(app).post("/api/auth/login").send({
+      email: "PRUEBA@example.com",
+      password,
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.token).toEqual(expect.any(String));
+
+    expect(response.body.user).toEqual({
+      id: "usuario123",
+      name: "Usuario Prueba",
+      email: "prueba@example.com",
+      role: "USER",
+    });
+
+    const decoded = jwt.verify(response.body.token, process.env.JWT_SECRET);
+
+    expect(decoded.sub).toBe("usuario123");
+    expect(decoded.role).toBe("USER");
+    expect(User.findOne).toHaveBeenCalledWith({
+      email: "prueba@example.com",
+    });
+  });
+
+  test("rechaza una contraseña incorrecta", async () => {
+    User.findOne.mockReturnValue({
+      select: jest.fn().mockResolvedValue({
+        ...validUser,
+        password: "hash-de-prueba",
+      }),
+    });
+
+    jest.spyOn(bcrypt, "compare").mockResolvedValue(false);
+
+    const response = await request(app).post("/api/auth/login").send({
+      email: "prueba@example.com",
+      password: "ContraseñaIncorrecta123!",
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
+    expect(response.body.message).toBe("Credenciales incorrectas");
+    expect(response.body.token).toBeUndefined();
   });
 });
