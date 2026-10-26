@@ -247,3 +247,88 @@ describe("POST /api/auth/login", () => {
     expect(response.body.token).toBeUndefined();
   });
 });
+
+describe("Rutas protegidas de usuarios", () => {
+  const authSecret = "clave-de-prueba-segura-para-jwt";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    process.env.JWT_SECRET = authSecret;
+  });
+
+  const createToken = (role = "USER") =>
+    jwt.sign({ role }, authSecret, {
+      subject: "usuario123",
+      expiresIn: "1h",
+    });
+
+  test("rechaza consultar el perfil sin token", async () => {
+    const response = await request(app).get("/api/users/me");
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
+  });
+
+  test("devuelve el perfil sin exponer la contraseña", async () => {
+    User.findById = jest.fn().mockResolvedValue({
+      _id: "usuario123",
+      name: "Usuario Prueba",
+      email: "prueba@example.com",
+      role: "USER",
+      createdAt: new Date("2026-01-01T00:00:00.000Z"),
+      updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+    });
+
+    // El controlador encadena .select() a findById().
+    User.findById.mockReturnValue({
+      select: jest.fn().mockResolvedValue({
+        _id: "usuario123",
+        name: "Usuario Prueba",
+        email: "prueba@example.com",
+        role: "USER",
+        createdAt: new Date("2026-01-01T00:00:00.000Z"),
+        updatedAt: new Date("2026-01-02T00:00:00.000Z"),
+      }),
+    });
+
+    const response = await request(app)
+      .get("/api/users/me")
+      .set("Authorization", `Bearer ${createToken()}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.user.email).toBe("prueba@example.com");
+    expect(response.body.user.password).toBeUndefined();
+    expect(User.findById).toHaveBeenCalledWith("usuario123");
+  });
+
+  test("rechaza el acceso administrativo a un usuario USER", async () => {
+    User.findById = jest.fn().mockReturnValue({
+      select: jest.fn().mockResolvedValue({
+        role: "USER",
+      }),
+    });
+
+    const response = await request(app)
+      .get("/api/users/admin-check")
+      .set("Authorization", `Bearer ${createToken("USER")}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.success).toBe(false);
+  });
+
+  test("permite el acceso administrativo a un usuario ADMIN", async () => {
+    User.findById = jest.fn().mockReturnValue({
+      select: jest.fn().mockResolvedValue({
+        role: "ADMIN",
+      }),
+    });
+
+    const response = await request(app)
+      .get("/api/users/admin-check")
+      .set("Authorization", `Bearer ${createToken("ADMIN")}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+  });
+});
