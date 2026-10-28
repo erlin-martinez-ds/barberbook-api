@@ -6,6 +6,7 @@ const {
   createBooking,
   listMyBookings,
   getBookingById,
+  confirmBooking,
 } = require("../controllers/booking.controller");
 
 const router = express.Router();
@@ -17,5 +18,11 @@ router.get(
   authMiddleware,
   authorizeRoles("USER", "BARBER"),
   getBookingById,
+);
+router.patch(
+  "/:id/confirm",
+  authMiddleware,
+  authorizeRoles("BARBER"),
+  confirmBooking,
 );
 module.exports = router;
