@@ -374,10 +374,68 @@ const rejectBooking = async (req, res, next) => {
   }
 };
 
+const cancelBooking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "El identificador de la reserva no es v�lido",
+      });
+    }
+
+    const cancelledBooking = await Booking.findOneAndUpdate(
+      {
+        _id: id,
+        client: req.user.id,
+        status: { $in: ["PENDING", "CONFIRMED"] },
+      },
+      {
+        $set: { status: "CANCELLED" },
+      },
+      { new: true, runValidators: true },
+    );
+
+    if (!cancelledBooking) {
+      const booking = await Booking.findById(id);
+
+      if (!booking) {
+        return res.status(404).json({
+          success: false,
+          message: "Reserva no encontrada",
+        });
+      }
+
+      if (booking.client.toString() !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "No puedes cancelar una reserva de otro cliente",
+        });
+      }
+
+      return res.status(409).json({
+        success: false,
+        message:
+          "La reserva no se encuentra en un estado que permita cancelarla",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Reserva cancelada correctamente",
+      booking: cancelledBooking,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createBooking,
   listMyBookings,
   getBookingById,
   confirmBooking,
   rejectBooking,
+  cancelBooking,
 };
