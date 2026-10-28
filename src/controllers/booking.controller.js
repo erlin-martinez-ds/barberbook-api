@@ -153,6 +153,27 @@ const createBooking = async (req, res, next) => {
   }
 };
 
+const listMyBookings = async (req, res, next) => {
+  try {
+    const bookings = await Booking.find({
+      client: req.user.id,
+    }).sort({
+      date: 1,
+      startTime: 1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Reservas del cliente consultadas correctamente",
+      total: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createBooking,
+  listMyBookings,
 };
