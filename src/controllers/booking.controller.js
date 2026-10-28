@@ -173,7 +173,48 @@ const listMyBookings = async (req, res, next) => {
   }
 };
 
+const getBookingById = async (req, res, next) => {
+  try {
+    const mongoose = require("mongoose");
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "El identificador de la reserva no es válido",
+      });
+    }
+
+    // Cada rol consulta únicamente las reservas que le corresponden.
+    const ownershipFilter =
+      req.user.role === "USER"
+        ? { client: req.user.id }
+        : { barber: req.user.id };
+
+    const booking = await Booking.findOne({
+      _id: id,
+      ...ownershipFilter,
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Reserva no encontrada",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Reserva consultada correctamente",
+      booking,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createBooking,
   listMyBookings,
+  getBookingById,
 };
