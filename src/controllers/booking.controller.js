@@ -213,8 +213,92 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
+
+
+const confirmBooking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "El identificador de la reserva no es válido",
+      });
+    }
+
+    // Solo el barbero asignado puede confirmar la solicitud.
+    const booking = await Booking.findOne({
+      _id: id,
+      barber: req.user.id,
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Reserva no encontrada",
+      });
+    }
+
+    if (booking.status !== "PENDING") {
+      return res.status(409).json({
+        success: false,
+        message: "Solo se pueden confirmar reservas pendientes",
+      });
+    }
+
+    // Volver a comprobar la disponibilidad antes de confirmar.
+    const { available } = await checkBookingAvailability({
+      barberId: booking.barber,
+      date: booking.date,
+      startTime: booking.startTime,
+      endTime: booking.endTime,
+      excludeBookingId: booking._id,
+    });
+
+    if (!available) {
+      return res.status(409).json({
+        success: false,
+        message: "No se puede confirmar: existe otra reserva en ese horario",
+      });
+    }
+
+    // Actualización condicional para evitar confirmar una reserva
+    // que haya cambiado de estado después de consultarla.
+    const confirmedBooking = await Booking.findOneAndUpdate(
+      {
+        _id: id,
+        barber: req.user.id,
+        status: "PENDING",
+      },
+      {
+        $set: { status: "CONFIRMED" },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!confirmedBooking) {
+      return res.status(409).json({
+        success: false,
+        message: "La reserva ya fue modificada o no está pendiente",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Reserva confirmada correctamente",
+      booking: confirmedBooking,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createBooking,
   listMyBookings,
   getBookingById,
+  confirmBooking,
 };
