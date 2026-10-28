@@ -1,0 +1,361 @@
+{
+    "info":  {
+                 "name":  "BarberBook API - CI",
+                 "description":  "Pruebas de humo para verificar los endpoints pÃºblicos de BarberBook API.",
+                 "schema":  "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+             },
+    "item":  [
+                 {
+                     "name":  "API - Verificar funcionamiento",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+
+                                                ],
+                                     "url":  "{{baseUrl}}/"
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027La API responde con HTTP 200\u0027, function () {",
+                                                                   "    pm.response.to.have.status(200);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta es JSON\u0027, function () {",
+                                                                   "    pm.response.to.be.json;",
+                                                                   "});"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Barberos - Listar",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+
+                                                ],
+                                     "url":  "{{baseUrl}}/api/barbers"
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El listado de barberos responde con HTTP 200\u0027, function () {",
+                                                                   "    pm.response.to.have.status(200);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta es JSON\u0027, function () {",
+                                                                   "    pm.response.to.be.json;",
+                                                                   "});"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "name":  "Servicios - Listar",
+                     "request":  {
+                                     "method":  "GET",
+                                     "header":  [
+
+                                                ],
+                                     "url":  "{{baseUrl}}/api/services"
+                                 },
+                     "event":  [
+                                   {
+                                       "listen":  "test",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El listado de servicios responde con HTTP 200\u0027, function () {",
+                                                                   "    pm.response.to.have.status(200);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta es JSON\u0027, function () {",
+                                                                   "    pm.response.to.be.json;",
+                                                                   "});"
+                                                               ]
+                                                  }
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "body":  {
+                                                  "raw":  "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              },
+                                     "method":  "POST",
+                                     "url":  "{{baseUrl}}/api/auth/register",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "type":  "text",
+                                                        "value":  "application/json"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Auth - Registrar usuario",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El registro responde con HTTP 201\u0027, function () {",
+                                                                   "    pm.response.to.have.status(201);",
+                                                                   "});",
+                                                                   "pm.test(\u0027El registro confirma el éxito\u0027, function () {",
+                                                                   "    pm.expect(pm.response.json().success).to.eql(true);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta incluye el usuario sin exponer la contraseña\u0027, function () {",
+                                                                   "    const user = pm.response.json().user;",
+                                                                   "    pm.expect(user).to.have.property(\u0027email\u0027);",
+                                                                   "    pm.expect(user).not.to.have.property(\u0027password\u0027);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   },
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.collectionVariables.set(\u0027testEmail\u0027, \u0027prueba.\u0027 + Date.now() + \u0027@example.com\u0027);"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "prerequest"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "body":  {
+                                                  "raw":  "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              },
+                                     "method":  "POST",
+                                     "url":  "{{baseUrl}}/api/auth/register",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "type":  "text",
+                                                        "value":  "application/json"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Auth - Rechazar correo duplicado",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El correo duplicado responde con HTTP 409\u0027, function () {",
+                                                                   "    pm.response.to.have.status(409);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "body":  {
+                                                  "raw":  "{\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              },
+                                     "method":  "POST",
+                                     "url":  "{{baseUrl}}/api/auth/login",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "type":  "text",
+                                                        "value":  "application/json"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Auth - Iniciar sesión correctamente",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El inicio de sesión responde con HTTP 200\u0027, function () {",
+                                                                   "    pm.response.to.have.status(200);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta incluye un token\u0027, function () {",
+                                                                   "    const data = pm.response.json();",
+                                                                   "    pm.expect(data.success).to.eql(true);",
+                                                                   "    pm.expect(data.token).to.be.a(\u0027string\u0027).and.not.empty;",
+                                                                   "    pm.collectionVariables.set(\u0027token\u0027, data.token);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "body":  {
+                                                  "raw":  "{\"email\":\"{{testEmail}}\",\"password\":\"ClaveIncorrecta123\"}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              },
+                                     "method":  "POST",
+                                     "url":  "{{baseUrl}}/api/auth/login",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "type":  "text",
+                                                        "value":  "application/json"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Auth - Rechazar contraseña incorrecta",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Las credenciales incorrectas responden con HTTP 401\u0027, function () {",
+                                                                   "    pm.response.to.have.status(401);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "body":  {
+                                                  "raw":  "{}",
+                                                  "options":  {
+                                                                  "raw":  {
+                                                                              "language":  "json"
+                                                                          }
+                                                              },
+                                                  "mode":  "raw"
+                                              },
+                                     "method":  "POST",
+                                     "url":  "{{baseUrl}}/api/auth/login",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Content-Type",
+                                                        "type":  "text",
+                                                        "value":  "application/json"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Auth - Rechazar campos obligatorios faltantes",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027Los campos faltantes responden con HTTP 400\u0027, function () {",
+                                                                   "    pm.response.to.have.status(400);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "GET",
+                                     "url":  "{{baseUrl}}/api/users/me",
+                                     "header":  [
+
+                                                ]
+                                 },
+                     "name":  "Usuarios - Rechazar acceso sin token",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El acceso sin token responde con HTTP 401\u0027, function () {",
+                                                                   "    pm.response.to.have.status(401);",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 },
+                 {
+                     "request":  {
+                                     "method":  "GET",
+                                     "url":  "{{baseUrl}}/api/users/me",
+                                     "header":  [
+                                                    {
+                                                        "key":  "Authorization",
+                                                        "type":  "text",
+                                                        "value":  "Bearer {{token}}"
+                                                    }
+                                                ]
+                                 },
+                     "name":  "Usuarios - Consultar perfil con token",
+                     "event":  [
+                                   {
+                                       "script":  {
+                                                      "exec":  [
+                                                                   "pm.test(\u0027El acceso autenticado responde con HTTP 200\u0027, function () {",
+                                                                   "    pm.response.to.have.status(200);",
+                                                                   "});",
+                                                                   "pm.test(\u0027La respuesta del perfil es JSON\u0027, function () {",
+                                                                   "    pm.response.to.be.json;",
+                                                                   "});"
+                                                               ],
+                                                      "type":  "text/javascript"
+                                                  },
+                                       "listen":  "test"
+                                   }
+                               ]
+                 }
+             ],
+    "variable":  [
+                     {
+                         "key":  "baseUrl",
+                         "value":  "http://127.0.0.1:3000"
+                     },
+                     {
+                         "key":  "testEmail",
+                         "value":  ""
+                     },
+                     {
+                         "key":  "testPassword",
+                         "value":  "BarberBook_Test_2026!"
+                     },
+                     {
+                         "key":  "token",
+                         "value":  ""
+                     }
+                 ]
+}

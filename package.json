@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "test:api": "newman run tests/postman/barberbook-api.collection.json"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.6.4",
     "jest": "^30.5.2",
+    "newman": "^6.2.3",
     "nodemon": "^3.1.14",
     "supertest": "^7.3.1"
   }
