@@ -3,6 +3,9 @@ const Booking = require("../models/booking.model");
 const Barber = require("../models/barber.model");
 const Service = require("../models/service.model");
 const {
+  canTransitionBookingStatus,
+} = require("../services/booking-status.service");
+const {
   checkBookingAvailability,
 } = require("../services/booking-availability.service");
 
@@ -237,7 +240,7 @@ const confirmBooking = async (req, res, next) => {
       });
     }
 
-    if (booking.status !== "PENDING") {
+    if (!canTransitionBookingStatus(booking.status, "CONFIRMED")) {
       return res.status(409).json({
         success: false,
         message: "Solo se pueden confirmar reservas pendientes",
@@ -332,7 +335,7 @@ const rejectBooking = async (req, res, next) => {
       });
     }
 
-    if (booking.status !== "PENDING") {
+    if (!canTransitionBookingStatus(booking.status, "REJECTED")) {
       return res.status(409).json({
         success: false,
         message: "Solo se pueden rechazar reservas pendientes",
@@ -381,7 +384,7 @@ const cancelBooking = async (req, res, next) => {
     if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({
         success: false,
-        message: "El identificador de la reserva no es v�lido",
+        message: "El identificador de la reserva no es válido",
       });
     }
 
@@ -414,11 +417,12 @@ const cancelBooking = async (req, res, next) => {
         });
       }
 
-      return res.status(409).json({
-        success: false,
-        message:
-          "La reserva no se encuentra en un estado que permita cancelarla",
-      });
+      if (!canTransitionBookingStatus(booking.status, "CANCELLED")) {
+        return res.status(409).json({
+          success: false,
+          message: "La reserva no se encuentra en un estado que permita cancelarla",
+        });
+      }
     }
 
     return res.status(200).json({
