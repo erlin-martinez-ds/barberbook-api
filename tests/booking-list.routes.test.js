@@ -128,3 +128,76 @@ describe("GET /api/bookings - reservas del cliente", () => {
     });
   });
 });
+
+describe("GET /api/bookings/my-bookings", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("debe rechazar la consulta sin token", async () => {
+    const response = await request(app).get(
+      "/api/bookings/my-bookings"
+    );
+
+    expect(response.status).toBe(401);
+  });
+
+  test("debe rechazar usuarios que no sean clientes", async () => {
+    mockUserRole("BARBER", clientId);
+
+    const response = await request(app)
+      .get("/api/bookings/my-bookings")
+      .set("Authorization", `Bearer ${createToken("BARBER", clientId)}`);
+
+    expect(response.status).toBe(403);
+    expect(Booking.find).not.toHaveBeenCalled();
+  });
+
+  test("debe devolver únicamente las reservas del cliente autenticado", async () => {
+    const bookings = [
+      {
+        _id: "booking-1",
+        client: clientId,
+        status: "PENDING",
+        date: "2026-11-10",
+        startTime: "10:00",
+        endTime: "10:30",
+      },
+    ];
+
+    mockUserRole("USER", clientId);
+
+    Booking.find.mockReturnValue({
+      sort: jest.fn().mockResolvedValue(bookings),
+    });
+
+    const response = await request(app)
+      .get("/api/bookings/my-bookings")
+      .set("Authorization", `Bearer ${createToken("USER", clientId)}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.total).toBe(1);
+    expect(response.body.bookings).toHaveLength(1);
+
+    expect(Booking.find).toHaveBeenCalledWith({
+      client: clientId,
+    });
+  });
+
+  test("debe devolver una lista vacía si no hay reservas", async () => {
+    mockUserRole("USER", clientId);
+
+    Booking.find.mockReturnValue({
+      sort: jest.fn().mockResolvedValue([]),
+    });
+
+    const response = await request(app)
+      .get("/api/bookings/my-bookings")
+      .set("Authorization", `Bearer ${createToken("USER", clientId)}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.total).toBe(0);
+    expect(response.body.bookings).toEqual([]);
+  });
+});
