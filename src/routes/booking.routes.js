@@ -7,6 +7,7 @@ const {
   listMyBookings,
   getBookingById,
   confirmBooking,
+  rejectBooking,
 } = require("../controllers/booking.controller");
 
 const router = express.Router();
@@ -24,5 +25,11 @@ router.patch(
   authMiddleware,
   authorizeRoles("BARBER"),
   confirmBooking,
+);
+router.patch(
+  "/:id/reject",
+  authMiddleware,
+  authorizeRoles("BARBER"),
+  rejectBooking,
 );
 module.exports = router;

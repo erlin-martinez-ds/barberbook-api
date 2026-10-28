@@ -22,7 +22,10 @@ const bookingSchema = new mongoose.Schema(
     date: {
       type: String,
       required: [true, "La fecha es obligatoria"],
-      match: [/^\d{4}-\d{2}-\d{2}$/, "La fecha debe tener el formato YYYY-MM-DD"],
+      match: [
+        /^\d{4}-\d{2}-\d{2}$/,
+        "La fecha debe tener el formato YYYY-MM-DD",
+      ],
     },
     startTime: {
       type: String,
@@ -38,6 +41,12 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"],
       default: "PENDING",
+    },
+    rejectionReason: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+      default: null,
     },
   },
   {
