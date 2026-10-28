@@ -213,8 +213,6 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
-
-
 const confirmBooking = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -296,9 +294,90 @@ const confirmBooking = async (req, res, next) => {
   }
 };
 
+const rejectBooking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "El identificador de la reserva no es válido",
+      });
+    }
+
+    if (typeof reason !== "string" || !reason.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "El motivo del rechazo es obligatorio",
+      });
+    }
+
+    if (reason.trim().length > 500) {
+      return res.status(400).json({
+        success: false,
+        message: "El motivo no puede superar los 500 caracteres",
+      });
+    }
+
+    const booking = await Booking.findOne({
+      _id: id,
+      barber: req.user.id,
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Reserva no encontrada",
+      });
+    }
+
+    if (booking.status !== "PENDING") {
+      return res.status(409).json({
+        success: false,
+        message: "Solo se pueden rechazar reservas pendientes",
+      });
+    }
+
+    const rejectedBooking = await Booking.findOneAndUpdate(
+      {
+        _id: id,
+        barber: req.user.id,
+        status: "PENDING",
+      },
+      {
+        $set: {
+          status: "REJECTED",
+          rejectionReason: reason.trim(),
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!rejectedBooking) {
+      return res.status(409).json({
+        success: false,
+        message: "La reserva ya fue modificada o no está pendiente",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Reserva rechazada correctamente",
+      booking: rejectedBooking,
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   createBooking,
   listMyBookings,
   getBookingById,
   confirmBooking,
+  rejectBooking,
 };
