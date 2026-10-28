@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const Booking = require("../models/booking.model");
 const Barber = require("../models/barber.model");
 const Service = require("../models/service.model");
+const {
+  checkBookingAvailability,
+} = require("../services/booking-availability.service");
 
 const createBooking = async (req, res, next) => {
   try {
@@ -117,7 +120,19 @@ const createBooking = async (req, res, next) => {
       endTime,
       status: "PENDING",
     });
+    const { available } = await checkBookingAvailability({
+      barberId,
+      date,
+      startTime,
+      endTime,
+    });
 
+    if (!available) {
+      return res.status(409).json({
+        success: false,
+        message: "El barbero ya tiene una reserva en ese horario",
+      });
+    }
     await booking.save();
 
     return res.status(201).json({
