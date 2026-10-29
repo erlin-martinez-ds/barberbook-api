@@ -1,0 +1,3531 @@
+{
+  "collection": {
+    "item": [
+      {
+        "id": "f7dfbe00-bfab-494b-a9dd-2a113d6b8182",
+        "name": "API - Verificar funcionamiento",
+        "request": {
+          "url": {
+            "path": [
+              ""
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "cfbca317-5559-46b5-b5d3-484af3529083",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('La API responde con HTTP 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('La respuesta es JSON', function () {",
+                "    pm.response.to.be.json;",
+                "});"
+              ],
+              "_lastExecutionId": "ef68d82b-3252-4fc7-926c-66fc2fdfdf88"
+            }
+          }
+        ]
+      },
+      {
+        "id": "3ee63be1-7530-4a4f-b015-f1ff70b2c0de",
+        "name": "Barberos - Listar",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "barbers"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4aabaee0-d985-4a3f-a961-5ddedbb9a4aa",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El listado de barberos responde con HTTP 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('La respuesta es JSON', function () {",
+                "    pm.response.to.be.json;",
+                "});"
+              ],
+              "_lastExecutionId": "0bc4b13f-de4d-46e6-9a0f-7117fe235b82"
+            }
+          }
+        ]
+      },
+      {
+        "id": "01dc1d3c-008b-4c90-b5ba-b78a06e38175",
+        "name": "Servicios - Listar",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "services"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "e8f2414d-b0b7-44b4-9503-83bee3f495c4",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El listado de servicios responde con HTTP 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('La respuesta es JSON', function () {",
+                "    pm.response.to.be.json;",
+                "});"
+              ],
+              "_lastExecutionId": "54f74913-d7d3-4f8e-8741-62d683b7d875"
+            }
+          }
+        ]
+      },
+      {
+        "id": "14b49677-a78c-4f59-841a-ceb6cc2f06e1",
+        "name": "Auth - Registrar usuario",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "31fb227d-8843-4e68-8019-7b8e53555d7c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El registro responde con HTTP 201', function () {",
+                "    pm.response.to.have.status(201);",
+                "});",
+                "pm.test('El registro confirma el éxito', function () {",
+                "    pm.expect(pm.response.json().success).to.eql(true);",
+                "});",
+                "pm.test('La respuesta incluye el usuario sin exponer la contraseña', function () {",
+                "    const user = pm.response.json().user;",
+                "    pm.expect(user).to.have.property('email');",
+                "    pm.expect(user).not.to.have.property('password');",
+                "});"
+              ],
+              "_lastExecutionId": "0d35d6a4-393f-4393-8119-d8a24804cf31"
+            }
+          },
+          {
+            "listen": "prerequest",
+            "script": {
+              "id": "0b4b83e9-084c-47b2-9ffa-f0c13efa0dbe",
+              "type": "text/javascript",
+              "exec": [
+                "pm.collectionVariables.set('testEmail', 'prueba.' + Date.now() + '@example.com');"
+              ],
+              "_lastExecutionId": "3b67116e-2236-4080-95b7-6bec8931ab3b"
+            }
+          }
+        ]
+      },
+      {
+        "id": "029d57e4-e84c-4392-977e-abe791ed16c1",
+        "name": "Auth - Rechazar correo duplicado",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "c356e111-3e64-443e-adb9-05b5e70c19e4",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El correo duplicado responde con HTTP 409', function () {",
+                "    pm.response.to.have.status(409);",
+                "});"
+              ],
+              "_lastExecutionId": "6961d0ad-1c0d-49db-b7c2-5cd354d435de"
+            }
+          }
+        ]
+      },
+      {
+        "id": "3bbdca5a-c5a0-402f-ad6f-856226c2dc7e",
+        "name": "Auth - Iniciar sesión correctamente",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "3c616023-9dc3-4683-ac24-06b01c7298dc",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El inicio de sesión responde con HTTP 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('La respuesta incluye un token', function () {",
+                "    const data = pm.response.json();",
+                "    pm.expect(data.success).to.eql(true);",
+                "    pm.expect(data.token).to.be.a('string').and.not.empty;",
+                "    pm.collectionVariables.set('token', data.token);",
+                "});"
+              ],
+              "_lastExecutionId": "d758f713-7328-46e1-9570-4031a7ae06e7"
+            }
+          }
+        ]
+      },
+      {
+        "id": "0780d12f-d7bb-49df-bce5-a9807862444f",
+        "name": "Auth - Rechazar contraseña incorrecta",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\":\"{{testEmail}}\",\"password\":\"ClaveIncorrecta123\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "da7e2457-a3ad-4123-833a-1fc26487abe8",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Las credenciales incorrectas responden con HTTP 401', function () {",
+                "    pm.response.to.have.status(401);",
+                "});"
+              ],
+              "_lastExecutionId": "f3e1e146-ef7f-4881-9846-c6c40eed3bd4"
+            }
+          }
+        ]
+      },
+      {
+        "id": "692567c7-6a7e-43b0-a190-d37d1e41a58d",
+        "name": "Auth - Rechazar campos obligatorios faltantes",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "fd26122c-a4e9-4e9a-ab53-000b806298e6",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Los campos faltantes responden con HTTP 400', function () {",
+                "    pm.response.to.have.status(400);",
+                "});"
+              ],
+              "_lastExecutionId": "fd58c02c-bcc7-4f42-abb5-c85a26596747"
+            }
+          }
+        ]
+      },
+      {
+        "id": "7da9c222-e026-436a-a942-5a07082801fd",
+        "name": "Usuarios - Rechazar acceso sin token",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "users",
+              "me"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4bf6f77a-c682-41ff-ba18-d94dfaabc513",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El acceso sin token responde con HTTP 401', function () {",
+                "    pm.response.to.have.status(401);",
+                "});"
+              ],
+              "_lastExecutionId": "64aa8f52-eb57-481d-af7c-d4ba727e3c67"
+            }
+          }
+        ]
+      },
+      {
+        "id": "5d9e37ce-ce3e-450d-aa93-7ec1a3f7229a",
+        "name": "Usuarios - Consultar perfil con token",
+        "request": {
+          "url": {
+            "path": [
+              "api",
+              "users",
+              "me"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ],
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "ee1067d4-3c63-480c-994c-1fdcd72e77c5",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('El acceso autenticado responde con HTTP 200', function () {",
+                "    pm.response.to.have.status(200);",
+                "});",
+                "pm.test('La respuesta del perfil es JSON', function () {",
+                "    pm.response.to.be.json;",
+                "});"
+              ],
+              "_lastExecutionId": "17300907-1d15-40aa-afff-b1bce8037db7"
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://127.0.0.1:3000",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "testEmail"
+      },
+      {
+        "type": "any",
+        "value": "BarberBook_Test_2026!",
+        "key": "testPassword"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "token"
+      }
+    ],
+    "info": {
+      "_postman_id": "2ef5ad32-ae62-4079-a14f-0f09c28f8f2c",
+      "name": "BarberBook API - CI",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Pruebas de humo para verificar los endpoints pÃºblicos de BarberBook API.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "id": "6c624a6a-8c00-4fbb-8583-dec9017766c8",
+    "values": []
+  },
+  "globals": {
+    "id": "6ff6fe19-aee7-4a31-9247-e48cc93db4cb",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 11,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 17,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 10,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 397.4,
+      "responseMin": 13,
+      "responseMax": 928,
+      "responseSd": 382.1636298759996,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1793223519919,
+      "completed": 1793223525603
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 10,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "dfdf9dd6-74bd-430f-9671-f04c691c0bf5",
+          "httpRequestId": "e9343e81-864d-4d43-ab6b-f0d399b38d98"
+        },
+        "item": {
+          "id": "f7dfbe00-bfab-494b-a9dd-2a113d6b8182",
+          "name": "API - Verificar funcionamiento",
+          "request": {
+            "url": {
+              "path": [
+                ""
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "cfbca317-5559-46b5-b5d3-484af3529083",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('La API responde con HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('La respuesta es JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ],
+                "_lastExecutionId": "ef68d82b-3252-4fc7-926c-66fc2fdfdf88"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              ""
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "5e4e4939-b4a0-4637-b4d6-c51900f5e1f4",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "6e4a6a54-5717-414c-aaa9-d9685e58d38e",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "54"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"36-9TLVGYQf4c/Ou9ENTFHNWDPJnHY\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:40 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              66,
+              97,
+              114,
+              98,
+              101,
+              114,
+              66,
+              111,
+              111,
+              107,
+              32,
+              65,
+              80,
+              73,
+              32,
+              102,
+              117,
+              110,
+              99,
+              105,
+              111,
+              110,
+              97,
+              110,
+              100,
+              111,
+              32,
+              99,
+              111,
+              114,
+              114,
+              101,
+              99,
+              116,
+              97,
+              109,
+              101,
+              110,
+              116,
+              101,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 116,
+          "responseSize": 54
+        },
+        "id": "f7dfbe00-bfab-494b-a9dd-2a113d6b8182",
+        "assertions": [
+          {
+            "assertion": "La API responde con HTTP 200",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta es JSON",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "af596156-55cb-4fe6-a072-8e33059c757d",
+          "length": 10,
+          "cycles": 1,
+          "position": 1,
+          "iteration": 0,
+          "httpRequestId": "baac5bb9-c807-49a5-937c-e1328654a7c9"
+        },
+        "item": {
+          "id": "3ee63be1-7530-4a4f-b015-f1ff70b2c0de",
+          "name": "Barberos - Listar",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "barbers"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4aabaee0-d985-4a3f-a961-5ddedbb9a4aa",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El listado de barberos responde con HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('La respuesta es JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ],
+                "_lastExecutionId": "0bc4b13f-de4d-46e6-9a0f-7117fe235b82"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "barbers"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ef276837-ed73-4563-8894-4cbfb830953b",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "bffdc973-40ef-4c64-ad1c-612301bc6b5f",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "39"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"27-lx4n1RZ8xaeY5PQqWAfgGkAnpnA\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:40 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              48,
+              44,
+              34,
+              98,
+              97,
+              114,
+              98,
+              101,
+              114,
+              115,
+              34,
+              58,
+              91,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 145,
+          "responseSize": 39
+        },
+        "id": "3ee63be1-7530-4a4f-b015-f1ff70b2c0de",
+        "assertions": [
+          {
+            "assertion": "El listado de barberos responde con HTTP 200",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta es JSON",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "0186e522-1e30-4cc2-bc48-2a5e764333c3",
+          "length": 10,
+          "cycles": 1,
+          "position": 2,
+          "iteration": 0,
+          "httpRequestId": "abb1658d-71c6-4ed4-85da-e05b3eb09e13"
+        },
+        "item": {
+          "id": "01dc1d3c-008b-4c90-b5ba-b78a06e38175",
+          "name": "Servicios - Listar",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "services"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "e8f2414d-b0b7-44b4-9503-83bee3f495c4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El listado de servicios responde con HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('La respuesta es JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ],
+                "_lastExecutionId": "54f74913-d7d3-4f8e-8741-62d683b7d875"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "services"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "a3341fdb-3357-42fc-a898-ffdbf8949eb8",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "143631dd-9d9c-4a9f-a69d-06226385f4f5",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "40"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"28-3EIpEkWc3qIpynRa/3BYsP6p+uo\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:40 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              99,
+              111,
+              117,
+              110,
+              116,
+              34,
+              58,
+              48,
+              44,
+              34,
+              115,
+              101,
+              114,
+              118,
+              105,
+              99,
+              101,
+              115,
+              34,
+              58,
+              91,
+              93,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 113,
+          "responseSize": 40
+        },
+        "id": "01dc1d3c-008b-4c90-b5ba-b78a06e38175",
+        "assertions": [
+          {
+            "assertion": "El listado de servicios responde con HTTP 200",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta es JSON",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "5a674145-133a-4351-a02f-fc669cce13e5",
+          "length": 10,
+          "cycles": 1,
+          "position": 3,
+          "iteration": 0,
+          "httpRequestId": "374c2e3c-57f7-4180-bfe9-956fa46416da"
+        },
+        "item": {
+          "id": "14b49677-a78c-4f59-841a-ceb6cc2f06e1",
+          "name": "Auth - Registrar usuario",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "31fb227d-8843-4e68-8019-7b8e53555d7c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El registro responde con HTTP 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test('El registro confirma el éxito', function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(true);",
+                  "});",
+                  "pm.test('La respuesta incluye el usuario sin exponer la contraseña', function () {",
+                  "    const user = pm.response.json().user;",
+                  "    pm.expect(user).to.have.property('email');",
+                  "    pm.expect(user).not.to.have.property('password');",
+                  "});"
+                ],
+                "_lastExecutionId": "0d35d6a4-393f-4393-8119-d8a24804cf31"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "id": "0b4b83e9-084c-47b2-9ffa-f0c13efa0dbe",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('testEmail', 'prueba.' + Date.now() + '@example.com');"
+                ],
+                "_lastExecutionId": "3b67116e-2236-4080-95b7-6bec8931ab3b"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "3ae1b66f-b045-4d43-8af5-7d0546989cfa",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "106",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"prueba.1793223520722@example.com\",\"password\":\"BarberBook_Test_2026!\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "0247269e-7de2-4d08-8f53-d83946fd0622",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "186"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"ba-EYmb5hrBZXukeU92Na2YSGHd78s\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:41 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              117,
+              97,
+              114,
+              105,
+              111,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              114,
+              97,
+              100,
+              111,
+              32,
+              99,
+              111,
+              114,
+              114,
+              101,
+              99,
+              116,
+              97,
+              109,
+              101,
+              110,
+              116,
+              101,
+              34,
+              44,
+              34,
+              117,
+              115,
+              101,
+              114,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              34,
+              54,
+              97,
+              101,
+              50,
+              54,
+              98,
+              54,
+              49,
+              52,
+              51,
+              98,
+              99,
+              55,
+              57,
+              57,
+              101,
+              56,
+              49,
+              97,
+              98,
+              49,
+              49,
+              98,
+              50,
+              34,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              117,
+              97,
+              114,
+              105,
+              111,
+              32,
+              100,
+              101,
+              32,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              34,
+              44,
+              34,
+              101,
+              109,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              46,
+              49,
+              55,
+              57,
+              51,
+              50,
+              50,
+              51,
+              53,
+              50,
+              48,
+              55,
+              50,
+              50,
+              64,
+              101,
+              120,
+              97,
+              109,
+              112,
+              108,
+              101,
+              46,
+              99,
+              111,
+              109,
+              34,
+              44,
+              34,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              34,
+              85,
+              83,
+              69,
+              82,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 855,
+          "responseSize": 186
+        },
+        "id": "14b49677-a78c-4f59-841a-ceb6cc2f06e1",
+        "assertions": [
+          {
+            "assertion": "El registro responde con HTTP 201",
+            "skipped": false
+          },
+          {
+            "assertion": "El registro confirma el éxito",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta incluye el usuario sin exponer la contraseña",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "0dfcb58b-2f94-4805-820c-b8b22026fa0d",
+          "length": 10,
+          "cycles": 1,
+          "position": 4,
+          "iteration": 0,
+          "httpRequestId": "7ce3ab15-c2c6-4879-8f80-67461df77c49"
+        },
+        "item": {
+          "id": "029d57e4-e84c-4392-977e-abe791ed16c1",
+          "name": "Auth - Rechazar correo duplicado",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "c356e111-3e64-443e-adb9-05b5e70c19e4",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El correo duplicado responde con HTTP 409', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ],
+                "_lastExecutionId": "6961d0ad-1c0d-49db-b7c2-5cd354d435de"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "auth",
+              "register"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "ebf76cc3-c9da-4c0a-87b7-b89920bf7497",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "106",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\":\"Usuario de prueba\",\"email\":\"prueba.1793223520722@example.com\",\"password\":\"BarberBook_Test_2026!\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "c6d925cf-87b5-4bbe-bf74-cf423fa2a6db",
+          "status": "Conflict",
+          "code": 409,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "72"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"48-NbwXtm+iSLOSRAcyfWpQhS6fk4M\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:43 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              69,
+              108,
+              32,
+              99,
+              111,
+              114,
+              114,
+              101,
+              111,
+              32,
+              101,
+              108,
+              101,
+              99,
+              116,
+              114,
+              195,
+              179,
+              110,
+              105,
+              99,
+              111,
+              32,
+              121,
+              97,
+              32,
+              101,
+              115,
+              116,
+              195,
+              161,
+              32,
+              114,
+              101,
+              103,
+              105,
+              115,
+              116,
+              114,
+              97,
+              100,
+              111,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 928,
+          "responseSize": 72
+        },
+        "id": "029d57e4-e84c-4392-977e-abe791ed16c1",
+        "assertions": [
+          {
+            "assertion": "El correo duplicado responde con HTTP 409",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "e8d3d079-eb59-42df-80e5-f6f0a35a127d",
+          "length": 10,
+          "cycles": 1,
+          "position": 5,
+          "iteration": 0,
+          "httpRequestId": "e3abffa5-b638-4de5-8614-dcafece90da5"
+        },
+        "item": {
+          "id": "3bbdca5a-c5a0-402f-ad6f-856226c2dc7e",
+          "name": "Auth - Iniciar sesión correctamente",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"{{testEmail}}\",\"password\":\"{{testPassword}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "3c616023-9dc3-4683-ac24-06b01c7298dc",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El inicio de sesión responde con HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('La respuesta incluye un token', function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.success).to.eql(true);",
+                  "    pm.expect(data.token).to.be.a('string').and.not.empty;",
+                  "    pm.collectionVariables.set('token', data.token);",
+                  "});"
+                ],
+                "_lastExecutionId": "d758f713-7328-46e1-9570-4031a7ae06e7"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "b70afb79-1dc1-426c-8416-3d195e0e9d8e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "79",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\":\"prueba.1793223520722@example.com\",\"password\":\"BarberBook_Test_2026!\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "307ea877-5ae8-4b78-8ca3-4da073aaeff4",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "381"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"17d-73sTnCAWIt/d0cAJ3zq8UDVPl7c\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:44 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              73,
+              110,
+              105,
+              99,
+              105,
+              111,
+              32,
+              100,
+              101,
+              32,
+              115,
+              101,
+              115,
+              105,
+              195,
+              179,
+              110,
+              32,
+              101,
+              120,
+              105,
+              116,
+              111,
+              115,
+              111,
+              34,
+              44,
+              34,
+              116,
+              111,
+              107,
+              101,
+              110,
+              34,
+              58,
+              34,
+              101,
+              121,
+              74,
+              104,
+              98,
+              71,
+              99,
+              105,
+              79,
+              105,
+              74,
+              73,
+              85,
+              122,
+              73,
+              49,
+              78,
+              105,
+              73,
+              115,
+              73,
+              110,
+              82,
+              53,
+              99,
+              67,
+              73,
+              54,
+              73,
+              107,
+              112,
+              88,
+              86,
+              67,
+              74,
+              57,
+              46,
+              101,
+              121,
+              74,
+              121,
+              98,
+              50,
+              120,
+              108,
+              73,
+              106,
+              111,
+              105,
+              86,
+              86,
+              78,
+              70,
+              85,
+              105,
+              73,
+              115,
+              73,
+              109,
+              108,
+              104,
+              100,
+              67,
+              73,
+              54,
+              77,
+              84,
+              99,
+              53,
+              77,
+              122,
+              73,
+              121,
+              77,
+              122,
+              85,
+              121,
+              78,
+              67,
+              119,
+              105,
+              90,
+              88,
+              104,
+              119,
+              73,
+              106,
+              111,
+              120,
+              78,
+              122,
+              107,
+              122,
+              77,
+              106,
+              89,
+              50,
+              78,
+              122,
+              73,
+              48,
+              76,
+              67,
+              74,
+              122,
+              100,
+              87,
+              73,
+              105,
+              79,
+              105,
+              73,
+              50,
+              89,
+              87,
+              85,
+              121,
+              78,
+              109,
+              73,
+              50,
+              77,
+              84,
+              81,
+              122,
+              89,
+              109,
+              77,
+              51,
+              79,
+              84,
+              108,
+              108,
+              79,
+              68,
+              70,
+              104,
+              89,
+              106,
+              69,
+              120,
+              89,
+              106,
+              73,
+              105,
+              102,
+              81,
+              46,
+              70,
+              65,
+              88,
+              55,
+              100,
+              99,
+              104,
+              52,
+              87,
+              89,
+              73,
+              51,
+              117,
+              79,
+              51,
+              70,
+              112,
+              89,
+              89,
+              71,
+              71,
+              89,
+              111,
+              122,
+              84,
+              54,
+              74,
+              101,
+              70,
+              77,
+              75,
+              52,
+              70,
+              113,
+              81,
+              81,
+              106,
+              73,
+              115,
+              83,
+              115,
+              49,
+              119,
+              34,
+              44,
+              34,
+              117,
+              115,
+              101,
+              114,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              34,
+              54,
+              97,
+              101,
+              50,
+              54,
+              98,
+              54,
+              49,
+              52,
+              51,
+              98,
+              99,
+              55,
+              57,
+              57,
+              101,
+              56,
+              49,
+              97,
+              98,
+              49,
+              49,
+              98,
+              50,
+              34,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              117,
+              97,
+              114,
+              105,
+              111,
+              32,
+              100,
+              101,
+              32,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              34,
+              44,
+              34,
+              101,
+              109,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              46,
+              49,
+              55,
+              57,
+              51,
+              50,
+              50,
+              51,
+              53,
+              50,
+              48,
+              55,
+              50,
+              50,
+              64,
+              101,
+              120,
+              97,
+              109,
+              112,
+              108,
+              101,
+              46,
+              99,
+              111,
+              109,
+              34,
+              44,
+              34,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              34,
+              85,
+              83,
+              69,
+              82,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 827,
+          "responseSize": 381
+        },
+        "id": "3bbdca5a-c5a0-402f-ad6f-856226c2dc7e",
+        "assertions": [
+          {
+            "assertion": "El inicio de sesión responde con HTTP 200",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta incluye un token",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "78f3ea5b-0f7a-4d21-a5e5-d78e99e0ae79",
+          "length": 10,
+          "cycles": 1,
+          "position": 6,
+          "iteration": 0,
+          "httpRequestId": "6d413dab-ce8a-4c74-8d42-a7d57f7b6d91"
+        },
+        "item": {
+          "id": "0780d12f-d7bb-49df-bce5-a9807862444f",
+          "name": "Auth - Rechazar contraseña incorrecta",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"{{testEmail}}\",\"password\":\"ClaveIncorrecta123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "da7e2457-a3ad-4123-833a-1fc26487abe8",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Las credenciales incorrectas responden con HTTP 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "f3e1e146-ef7f-4881-9846-c6c40eed3bd4"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "480ae14c-7997-4e40-88e3-11524bc4d4c6",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "76",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\":\"prueba.1793223520722@example.com\",\"password\":\"ClaveIncorrecta123\"}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "46654ae7-7b0a-4fef-bd15-99826093669e",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "54"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"36-JVMpDJCd0VBDnkiPG2IXY6aDCmk\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:44 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              67,
+              114,
+              101,
+              100,
+              101,
+              110,
+              99,
+              105,
+              97,
+              108,
+              101,
+              115,
+              32,
+              105,
+              110,
+              99,
+              111,
+              114,
+              114,
+              101,
+              99,
+              116,
+              97,
+              115,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 837,
+          "responseSize": 54
+        },
+        "id": "0780d12f-d7bb-49df-bce5-a9807862444f",
+        "assertions": [
+          {
+            "assertion": "Las credenciales incorrectas responden con HTTP 401",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "1bd499bb-1669-4314-b6f3-bee60965b9be",
+          "length": 10,
+          "cycles": 1,
+          "position": 7,
+          "iteration": 0,
+          "httpRequestId": "a1b6745e-43cf-4960-b933-e3750d265261"
+        },
+        "item": {
+          "id": "692567c7-6a7e-43b0-a190-d37d1e41a58d",
+          "name": "Auth - Rechazar campos obligatorios faltantes",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "fd26122c-a4e9-4e9a-ab53-000b806298e6",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Los campos faltantes responden con HTTP 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ],
+                "_lastExecutionId": "fd58c02c-bcc7-4f42-abb5-c85a26596747"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "auth",
+              "login"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c4c7cfa8-3cc8-4c38-bd91-33a69cc29c0d",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "2",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{}",
+            "options": {
+              "raw": {
+                "language": "json"
+              }
+            }
+          }
+        },
+        "response": {
+          "id": "55c9482d-acd5-4876-b8e4-49e95047622c",
+          "status": "Bad Request",
+          "code": 400,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "80"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"50-gT1bZYi+0IJRse1FlJ7a56xXPac\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:45 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              67,
+              111,
+              114,
+              114,
+              101,
+              111,
+              32,
+              101,
+              108,
+              101,
+              99,
+              116,
+              114,
+              195,
+              179,
+              110,
+              105,
+              99,
+              111,
+              32,
+              121,
+              32,
+              99,
+              111,
+              110,
+              116,
+              114,
+              97,
+              115,
+              101,
+              195,
+              177,
+              97,
+              32,
+              115,
+              111,
+              110,
+              32,
+              111,
+              98,
+              108,
+              105,
+              103,
+              97,
+              116,
+              111,
+              114,
+              105,
+              111,
+              115,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 16,
+          "responseSize": 80
+        },
+        "id": "692567c7-6a7e-43b0-a190-d37d1e41a58d",
+        "assertions": [
+          {
+            "assertion": "Los campos faltantes responden con HTTP 400",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "24b98902-e105-493e-a586-7af36a02d88b",
+          "length": 10,
+          "cycles": 1,
+          "position": 8,
+          "iteration": 0,
+          "httpRequestId": "487571e4-617f-42d5-8b1c-d068d01023f6"
+        },
+        "item": {
+          "id": "7da9c222-e026-436a-a942-5a07082801fd",
+          "name": "Usuarios - Rechazar acceso sin token",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "4bf6f77a-c682-41ff-ba18-d94dfaabc513",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El acceso sin token responde con HTTP 401', function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});"
+                ],
+                "_lastExecutionId": "64aa8f52-eb57-481d-af7c-d4ba727e3c67"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "users",
+              "me"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "26b06d84-b883-42ac-a524-ac9c6d34aa3e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "c56322a3-56f1-4c40-9706-70bf2446d22b",
+          "status": "Unauthorized",
+          "code": 401,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "68"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"44-Dg0QB+9rG0G1vw/4MYWJa1WopPA\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:45 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              102,
+              97,
+              108,
+              115,
+              101,
+              44,
+              34,
+              109,
+              101,
+              115,
+              115,
+              97,
+              103,
+              101,
+              34,
+              58,
+              34,
+              83,
+              101,
+              32,
+              114,
+              101,
+              113,
+              117,
+              105,
+              101,
+              114,
+              101,
+              32,
+              117,
+              110,
+              32,
+              116,
+              111,
+              107,
+              101,
+              110,
+              32,
+              100,
+              101,
+              32,
+              97,
+              117,
+              116,
+              101,
+              110,
+              116,
+              105,
+              99,
+              97,
+              99,
+              105,
+              195,
+              179,
+              110,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 13,
+          "responseSize": 68
+        },
+        "id": "7da9c222-e026-436a-a942-5a07082801fd",
+        "assertions": [
+          {
+            "assertion": "El acceso sin token responde con HTTP 401",
+            "skipped": false
+          }
+        ]
+      },
+      {
+        "cursor": {
+          "ref": "f12f88a2-bda1-4275-94b0-19abfe1e0149",
+          "length": 10,
+          "cycles": 1,
+          "position": 9,
+          "iteration": 0,
+          "httpRequestId": "17aecbd1-cf7b-48e3-b3dc-cfe29ad1519d"
+        },
+        "item": {
+          "id": "5d9e37ce-ce3e-450d-aa93-7ec1a3f7229a",
+          "name": "Usuarios - Consultar perfil con token",
+          "request": {
+            "url": {
+              "path": [
+                "api",
+                "users",
+                "me"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "method": "GET"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "ee1067d4-3c63-480c-994c-1fdcd72e77c5",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('El acceso autenticado responde con HTTP 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('La respuesta del perfil es JSON', function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ],
+                "_lastExecutionId": "17300907-1d15-40aa-afff-b1bce8037db7"
+              }
+            }
+          ]
+        },
+        "request": {
+          "url": {
+            "protocol": "http",
+            "port": "3000",
+            "path": [
+              "api",
+              "users",
+              "me"
+            ],
+            "host": [
+              "127",
+              "0",
+              "0",
+              "1"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiVVNFUiIsImlhdCI6MTc5MzIyMzUyNCwiZXhwIjoxNzkzMjY2NzI0LCJzdWIiOiI2YWUyNmI2MTQzYmM3OTllODFhYjExYjIifQ.FAX7dch4WYI3uO3FpYYGGYozT6JeFMK4FqQQjIsSs1w"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "c4f9f9c7-e405-498d-be9a-dc17f13192ed",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "127.0.0.1:3000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            }
+          ],
+          "method": "GET"
+        },
+        "response": {
+          "id": "2bdeef1c-c7c2-4559-992b-d4a804aac052",
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "X-Powered-By",
+              "value": "Express"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            },
+            {
+              "key": "Content-Length",
+              "value": "219"
+            },
+            {
+              "key": "ETag",
+              "value": "W/\"db-Nmj8IP5Yiej75A9bHSXzVyDUhZ8\""
+            },
+            {
+              "key": "Date",
+              "value": "Wed, 28 Oct 2026 21:38:45 GMT"
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              115,
+              117,
+              99,
+              99,
+              101,
+              115,
+              115,
+              34,
+              58,
+              116,
+              114,
+              117,
+              101,
+              44,
+              34,
+              117,
+              115,
+              101,
+              114,
+              34,
+              58,
+              123,
+              34,
+              105,
+              100,
+              34,
+              58,
+              34,
+              54,
+              97,
+              101,
+              50,
+              54,
+              98,
+              54,
+              49,
+              52,
+              51,
+              98,
+              99,
+              55,
+              57,
+              57,
+              101,
+              56,
+              49,
+              97,
+              98,
+              49,
+              49,
+              98,
+              50,
+              34,
+              44,
+              34,
+              110,
+              97,
+              109,
+              101,
+              34,
+              58,
+              34,
+              85,
+              115,
+              117,
+              97,
+              114,
+              105,
+              111,
+              32,
+              100,
+              101,
+              32,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              34,
+              44,
+              34,
+              101,
+              109,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              112,
+              114,
+              117,
+              101,
+              98,
+              97,
+              46,
+              49,
+              55,
+              57,
+              51,
+              50,
+              50,
+              51,
+              53,
+              50,
+              48,
+              55,
+              50,
+              50,
+              64,
+              101,
+              120,
+              97,
+              109,
+              112,
+              108,
+              101,
+              46,
+              99,
+              111,
+              109,
+              34,
+              44,
+              34,
+              114,
+              111,
+              108,
+              101,
+              34,
+              58,
+              34,
+              85,
+              83,
+              69,
+              82,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              56,
+              84,
+              50,
+              49,
+              58,
+              51,
+              56,
+              58,
+              52,
+              49,
+              46,
+              53,
+              48,
+              49,
+              90,
+              34,
+              44,
+              34,
+              117,
+              112,
+              100,
+              97,
+              116,
+              101,
+              100,
+              65,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              49,
+              48,
+              45,
+              50,
+              56,
+              84,
+              50,
+              49,
+              58,
+              51,
+              56,
+              58,
+              52,
+              49,
+              46,
+              53,
+              48,
+              49,
+              90,
+              34,
+              125,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 124,
+          "responseSize": 219
+        },
+        "id": "5d9e37ce-ce3e-450d-aa93-7ec1a3f7229a",
+        "assertions": [
+          {
+            "assertion": "El acceso autenticado responde con HTTP 200",
+            "skipped": false
+          },
+          {
+            "assertion": "La respuesta del perfil es JSON",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 1193
+    },
+    "failures": [],
+    "error": null
+  }
+}

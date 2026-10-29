@@ -2,3 +2,16 @@ node_modules/
 .env
 .env.*
 !.env.example
+
+# Registros temporales
+jmeter.log
+server.log
+
+# Reportes HTML generados por JMeter
+reports/jmeter-html/
+# Registros temporales
+jmeter.log
+server.log
+
+# Reportes HTML generados por JMeter
+reports/jmeter-html/

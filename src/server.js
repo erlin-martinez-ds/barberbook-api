@@ -1,8 +1,8 @@
 
-require('dotenv').config({ path: '.env.development' });
+require("dotenv").config({ path: ".env.development" });
 
-const app = require('./app');
-const connectDB = require('./config/db');
+const app = require("./app");
+const connectDB = require("./config/db");
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,7 +14,7 @@ const startServer = async () => {
       console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('No se pudo iniciar el servidor:', error.message);
+    console.error("No se pudo iniciar el servidor:", error.message);
     process.exit(1);
   }
 };
