@@ -7,7 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "test": "jest --runInBand",
-    "test:api": "newman run tests/postman/barberbook-api.collection.json"
+    "test:api": "newman run tests/postman/barberbook-api.collection.json --reporters cli,json --reporter-json-export reports/newman-results.json"
   },
   "repository": {
     "type": "git",

@@ -26,7 +26,6 @@ if (process.env.NODE_ENV !== "production") {
   app.get("/test-error", (req, res, next) => {
     const error = new Error("Error de prueba del middleware");
     error.statusCode = 500;
-
     next(error);
   });
 }

@@ -1,0 +1,63 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      MONGODB_URI: mongodb://127.0.0.1:27017/barberbook_test
+      JWT_SECRET: test_secret_for_ci_only
+      JWT_EXPIRES_IN: 1h
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar pruebas Jest
+        run: npm test -- --ci
+
+      - name: Iniciar servidor para Newman
+        run: |
+          npm start > server.log 2>&1 &
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:3000/ > /dev/null; then
+              echo "Servidor listo para las pruebas API"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "El servidor no inicio correctamente"
+          cat server.log
+          exit 1
+
+      - name: Ejecutar pruebas API con Newman
+        run: npm run test:api
