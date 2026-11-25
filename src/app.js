@@ -5,9 +5,16 @@ const userRoutes = require("./routes/user.routes");
 const barberRoutes = require("./routes/barber.routes");
 const serviceRoutes = require("./routes/service.routes");
 const bookingRoutes = require("./routes/booking.routes");
+const cors = require("cors");
 
 const app = express();
-
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:3000"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
